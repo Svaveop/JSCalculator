@@ -1,4 +1,4 @@
-# JSCalculator
+# JS + HTML Calculator
 ## About
 
 JSCalculator is a simple yet functional calculator built using JavaScript and HTML, with embedded CSS for styling. This project serves as a practical example of how to implement basic calculator functionalities on the web.
