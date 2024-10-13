@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        #calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            width: 300px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+        }
+        #display {
+            grid-column: span 4;
+            height: 50px;
+            text-align: right;
+            padding: 10px;
+            font-size: 30px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+        button {
+            height: 60px;
+            font-size: 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .number-button {
+            background-color: #b0b0b0; 
+        }
+
+        .number-button:hover {
+            background-color: #a0a0a0; 
+        }
+
+        .equal-button {
+            background-color: #024b94; 
+            color: white; 
+        }
+
+        .equal-button:hover {
+            background-color: #0055a5; 
+        }
+
+        /* Light Theme */
+        .light {
+            background-color: #f0f0f0;
+            color: black;
+        }
+        .light #calculator {
+            background-color: white;
+        }
+        .light #display {
+            background-color: #fff;
+            color: black;
+            border: 1px solid #ccc;
+        }
+        
+        /* Dark Theme */
+        .dark {
+            background-color: #333;
+            color: white;
+        }
+        .dark #calculator {
+            background-color: #444;
+        }
+        .dark #display {
+            background-color: #555;
+            color: white;
+            border: 1px solid #666;
+        }
+
+        .animate {
+            animation: pop 0.3s ease forwards;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .multiply {
+            font-size: 30px;
+            vertical-align: middle; 
+        }
+        .divide {
+            font-size: 30px;
+            vertical-align: middle; 
+        }
+    </style>
+</head>
+<body class="light">
+    <div id="calculator">
+        <input type="text" id="display" disabled>
+        <button class="clear-button" onclick="clearDisplay()">C</button>
+        <button onclick="backspace()">←</button>
+        <button onclick="calculateSquare()">x²</button>
+        <button onclick="calculateSquareRoot()">√</button>
+        <button onclick="setOperator('/')"><span class="divide">÷</span></button>
+        <button class="number-button" onclick="appendNumber('7')">7</button>
+        <button class="number-button" onclick="appendNumber('8')">8</button>
+        <button class="number-button" onclick="appendNumber('9')">9</button>
+        <button onclick="setOperator('x')"><span class="multiply">x</span></button>
+        <button class="number-button" onclick="appendNumber('4')">4</button>
+        <button class="number-button" onclick="appendNumber('5')">5</button>
+        <button class="number-button" onclick="appendNumber('6')">6</button>
+        <button onclick="setOperator('-')">-</button>
+        <button class="number-button" onclick="appendNumber('1')">1</button>
+        <button class="number-button" onclick="appendNumber('2')">2</button>
+        <button class="number-button" onclick="appendNumber('3')">3</button>
+        <button onclick="setOperator('+')">+</button>
+        <button class="number-button" onclick="appendNumber('0')">0</button>
+        <button class="decimal-button" onclick="appendDecimal()">.</button>
+        <button class="equal-button" onclick="calculateResult()">=</button> 
+        <button onclick="calculateSine()">sin</button>
+        <button onclick="calculateCosine()">cos</button>
+        <button onclick="calculateTangent()">tg</button>
+        <button id="themeToggle" onclick="toggleTheme()">🌙</button> 
+    </div>
+
+    <script>
+        let currentNumber = '';
+        let previousNumber = '';
+        let operator = '';
+        let shouldResetDisplay = false;
+
+        function appendNumber(number) {
+            if (shouldResetDisplay) {
+                currentNumber = number;
+                shouldResetDisplay = false;
+            } else {
+                currentNumber += number; 
+            }
+            updateDisplay(currentNumber);
+            triggerAnimation();
+        }
+
+        function setOperator(op) {
+            if (currentNumber === '') return;
+            if (operator !== '') calculateResult(); 
+            operator = op; 
+            previousNumber = currentNumber; 
+            currentNumber = ''; 
+        }
+
+        function clearDisplay() {
+            currentNumber = '';
+            previousNumber = '';
+            operator = '';
+            updateDisplay(currentNumber);
+        }
+
+        function calculateResult() {
+            let result;
+            const prev = parseFloat(previousNumber);
+            const current = parseFloat(currentNumber);
+            if (isNaN(prev) || isNaN(current)) return;
+
+            switch (operator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case 'x':
+                    result = prev * current;
+                    break;
+                case '/':
+                    result = prev / current;
+                    break;
+                default:
+                    return;
+            }
+
+            currentNumber = result.toString();
+            operator = '';
+            previousNumber = '';
+            updateDisplay(currentNumber);
+            triggerAnimation();
+        }
+
+        function backspace() {
+            currentNumber = currentNumber.slice(0, -1); 
+            updateDisplay(currentNumber);
+        }
+
+        function appendDecimal() {
+            if (currentNumber === '') return;
+            if (currentNumber.includes('.')) return;
+            currentNumber += '.'; 
+            updateDisplay(currentNumber);
+            triggerAnimation();
+        }
+
+        function calculateSquare() {
+            if (currentNumber === '') return;
+            currentNumber = Math.pow(parseFloat(currentNumber), 2).toString();
+            updateDisplay(currentNumber);
+            triggerAnimation(); 
+        }
+
+        function calculateSquareRoot() {
+            if (currentNumber === '') return;
+            currentNumber = Math.sqrt(parseFloat(currentNumber)).toString();
+            updateDisplay(currentNumber);
+            triggerAnimation();
+        }
+
+        function calculateSine() {
+            if (currentNumber === '') return;
+            currentNumber = Math.sin(parseFloat(currentNumber)).toString();
+            updateDisplay(currentNumber);
+            triggerAnimation(); 
+        }
+
+        function calculateCosine() {
+            if (currentNumber === '') return;
+            currentNumber = Math.cos(parseFloat(currentNumber)).toString();
+            updateDisplay(currentNumber);
+            triggerAnimation();
+        }
+
+        function calculateTangent() {
+            if (currentNumber === '') return;
+            currentNumber = Math.tan(parseFloat(currentNumber)).toString();
+            updateDisplay(currentNumber);
+            triggerAnimation(); 
+        }
+
+        function updateDisplay(number) {
+            const display = document.getElementById('display');
+            display.value = number;
+        }
+
+        function triggerAnimation() {
+            const display = document.getElementById('display');
+            display.classList.add('animate');
+            setTimeout(() => {
+                display.classList.remove('animate');
+            }, 300); 
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            document.body.classList.toggle('light');
+        }
+    </script>
+</body>
+</html>
