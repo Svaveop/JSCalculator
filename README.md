@@ -11,7 +11,7 @@ JSCalculator is a simple yet functional calculator built using JavaScript and HT
 
 ## Installation
 
-To get a copy of this project up and running on your local machine, follow these step:
+To get a copy of this project up and running on your local machine, follow this step:
 
  - **Clone the Repository**:
    ```bash
